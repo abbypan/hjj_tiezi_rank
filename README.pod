@@ -1,0 +1,47 @@
+=pod
+
+=encoding utf8
+
+=head1 名称
+
+hjj_tiezi_rank.pl 红晋江贴子评分
+
+=head1 说明
+
+需求来自 bubble7733 ，同人文库不同CP贴子太多看不过来
+
+做一个查询贴子并自动评分的工具
+
+当前评分算法：
+- 评分整数部分：长贴点击质量（平均点击热度，惩罚短楼层），用等差数列补偿后续楼层
+- 评分小数部分（来自bubble7733）：整楼回复中水贴比例（贴子热度）
+
+=head2 示例
+
+    查 HJJ 同人文库中，主题出现“宗祥”的贴子评分，楼层字数<800认为是水贴，页数点击量补偿因子设为0.1
+
+    perl hjj_tiezi_rank.pl -b 36 -q 贴子主题 -v 宗祥 -n 800 -d 0.1 -p 5 -o zx.html
+
+=head1 参数 
+
+    -b 版块序号，例如同人文库为36
+    -q 查询类型
+    -v 查询关键字
+    -n 楼层水贴字数阈值
+    -p 进程数
+    -d 页数点击量补偿因子
+    -o 输出的html文件名
+
+=head1 安装
+
+需要perl环境 
+
+    cpan App::cpanminus
+    cpanm Encode::Locale
+    cpanm Template
+    cpanm Tiezi::Robot
+    cpanm Novel::Robot::Browser
+    cpanm Tiezi::Robot::Parser
+    cpanm Tiezi::Robot::Packer
+
+=cut
