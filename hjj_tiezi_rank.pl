@@ -3,10 +3,9 @@ use Data::Dumper;
 use Encode::Locale;
 use Encode;
 use Getopt::Std;
-use lib '/home/panll/Copy/github/Novel-Robot-Parser/lib';
-use lib '/home/panll/Copy/github/Novel-Robot/lib';
-use lib '/home/panll/Copy/github/Novel-Robot-Packer/lib';
 use Novel::Robot;
+use Novel::Robot::Parser;
+use Novel::Robot::Packer;
 use Template;
 use utf8;
 use strict;
@@ -14,18 +13,16 @@ use warnings;
 $| = 1;
 
 my %opt;
-getopt( 'Bqknopdc', \%opt );
+getopt( 'Bqknodc', \%opt );
 $opt{q} = decode( locale => $opt{q} );
 $opt{k} = decode( locale => $opt{k} );
 $opt{n} ||= 800;
 $opt{B} ||= 36;    #xq
-$opt{p} ||= 5;
 $opt{d} ||= 0.1;
 
 my $xs = Novel::Robot->new(
     site            => 'hjj',
     type            => $opt{t} || 'html',
-    max_process_num => $opt{p},
 );
 
 my $res = get_query_analyse( $xs, \%opt );
@@ -38,7 +35,7 @@ sub calc_tiezi_rank {
 
     my $floors = $tz->{floor_list};
 
-    my $n      = $tz->{raw_floor_num};
+    my $n      = $tz->{floor_num};
     #return {} unless ( $n > 0 and $r->{click} );
     return {} unless ( $n > 0 );
 
@@ -48,13 +45,16 @@ sub calc_tiezi_rank {
     $r_a = 0.99 if ( $r_a == 1 );
 
     #长贴点击质量（平均点击热度，惩罚短楼层） $r_b >= 0
-    my $ceil_n = int( ($n-1) / 300 ) + 1;
+    #my $ceil_n = int( ($n-1) / 300 ) + 1;
+    my $ceil_n = int( ($n-1) / 300 );
 
     #页数越多，后面的楼层点击量会逐步衰减，用等差数列补一下
-    my $ceil_x     = ( 1 + 1 + $o{click_page_delta} * ( $ceil_n - 1 ) ) / 2;
+    #my $ceil_x     = ( 1 + 1 + $o{click_page_delta} * ( $ceil_n - 1 ) ) / 2;
+    my $ceil_x     = ( 1 + 1 + $o{click_page_delta} * $ceil_n ) / 2;
+
     my $ceil_click = int( $ceil_x * $r->{click} / 1000 ) + 1;
 
-    my $r_b = int( $ceil_click / $ceil_n );
+    my $r_b = int( $ceil_click / ($ceil_n+1) );
 
     return {
         floor_num        => $n,
@@ -63,8 +63,8 @@ sub calc_tiezi_rank {
 
         page_num => $ceil_n, 
         page_click_rank => $r_b, 
-        #rank             => $r_a + $r_b,
-        rank             => $r_a ,
+        rank             => $r_a + $r_b,
+        #rank             => $r_a ,
     };
 }
 

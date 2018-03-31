@@ -23,7 +23,7 @@ hjj_tiezi_rank.pl 红晋江贴子评分
 
     查 HJJ 同人文库中，主题出现“宗祥”的贴子评分，楼层字数<800认为是水贴，页数点击量补偿因子设为0.1
 
-    perl hjj_tiezi_rank.pl -B 36 -q 贴子主题 -k 宗祥 -n 800 -d 0.1 -p 5 -o zx.html
+    perl hjj_tiezi_rank.pl -B 36 -q 贴子主题 -k 宗祥 -n 800 -d 0.1 -o sample.html
 
 =head1 参数 
 
@@ -31,7 +31,6 @@ hjj_tiezi_rank.pl 红晋江贴子评分
     -q 查询类型
     -k 查询关键字
     -n 楼层水贴字数阈值
-    -p 进程数
     -d 页数点击量补偿因子
     -o 输出的html文件名
 
